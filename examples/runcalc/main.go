@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	wa "github.com/hnakamur/w32uiautomation"
+	wa "github.com/miklaine/w32uiautomation"
 	"github.com/go-ole/go-ole"
 )
 

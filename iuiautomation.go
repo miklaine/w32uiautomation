@@ -98,6 +98,10 @@ func (auto *IUIAutomation) CreateTreeWalker(condition *IUIAutomationCondition) (
 	return createTreeWalker(auto, condition)
 }
 
+func (auto *IUIAutomation) Get_ControlViewWalker() (walker *IUIAutomationTreeWalker, err error) {
+	return getControlViewWalker(auto)
+}
+
 func (auto *IUIAutomation) CreateTrueCondition() (newCondition *IUIAutomationCondition, err error) {
 	return createTrueCondition(auto)
 }
@@ -110,6 +114,14 @@ func (auto *IUIAutomation) CreatePropertyCondition(propertyId PROPERTYID, value 
 	return createPropertyCondition(auto, propertyId, value)
 }
 
+func (auto *IUIAutomation) AddAutomationEventHandler(eventId EVENTID, element *IUIAutomationElement, scope TreeScope, cacheRequest *IUIAutomationCacheRequest, handler *IUIAutomationEventHandler) error {
+	return addAutomationEventHandler(auto, eventId, element, scope, cacheRequest, handler)
+}
+
+func (auto *IUIAutomation) RemoveAutomationEventHandler(eventId EVENTID, element *IUIAutomationElement, handler *IUIAutomationEventHandler) error {
+	return removeAutomationEventHandler(auto, eventId, element, handler)
+}
+
 func (auto *IUIAutomation) AddStructureChangedEventHandler(element *IUIAutomationElement, scope TreeScope, cacheRequest *IUIAutomationCacheRequest, handler *IUIAutomationStructureChangedEventHandler) error {
 	return addStructureChangedEventHandler(auto, element, scope, cacheRequest, handler)
 }
@@ -120,6 +132,10 @@ func (auto *IUIAutomation) RemoveStructureChangedEventHandler(element *IUIAutoma
 
 func (auto *IUIAutomation) RemoveAllEventHandlers() error {
 	return removeAllEventHandlers(auto)
+}
+
+func (auto *IUIAutomation) ElementFromHandle(hwnd uintptr) (*IUIAutomationElement, error) {
+	return elementFromHandle(auto, hwnd)
 }
 
 func compareElements(auto *IUIAutomation, el1, el2 *IUIAutomation) (areSame bool, err error) {
@@ -164,6 +180,18 @@ func createTreeWalker(auto *IUIAutomation, condition *IUIAutomationCondition) (w
 	return
 }
 
+func getControlViewWalker(auto *IUIAutomation) (walker *IUIAutomationTreeWalker, err error) {
+	hr, _, _ := syscall.Syscall(auto.VTable().Get_ControlViewWalker,
+		3,
+		uintptr(unsafe.Pointer(auto)),
+		uintptr(unsafe.Pointer(&walker)),
+		0)
+	if hr != 0 {
+		err = ole.NewError(hr)
+	}
+	return
+}
+
 func createTrueCondition(auto *IUIAutomation) (newCondition *IUIAutomationCondition, err error) {
 	hr, _, _ := syscall.Syscall(
 		auto.VTable().CreateTrueCondition,
@@ -191,6 +219,38 @@ func createAndCondition(auto *IUIAutomation, condition1, condition2 *IUIAutomati
 		err = ole.NewError(hr)
 	}
 	return
+}
+
+func addAutomationEventHandler(auto *IUIAutomation, eventId EVENTID, element *IUIAutomationElement, scope TreeScope, cacheRequest *IUIAutomationCacheRequest, handler *IUIAutomationEventHandler) error {
+	hr, _, _ := syscall.Syscall6(
+		auto.VTable().AddAutomationEventHandler,
+		6,
+		uintptr(unsafe.Pointer(auto)),
+		uintptr(unsafe.Pointer(eventId)),
+		uintptr(unsafe.Pointer(element)),
+		uintptr(scope),
+		uintptr(unsafe.Pointer(cacheRequest)),
+		uintptr(unsafe.Pointer(handler)))
+	if hr != 0 {
+		return ole.NewError(hr)
+	}
+	return nil
+}
+
+func removeAutomationEventHandler(auto *IUIAutomation, eventId EVENTID, element *IUIAutomationElement, handler *IUIAutomationEventHandler) error {
+	hr, _, _ := syscall.Syscall6(
+		auto.VTable().RemoveAutomationEventHandler,
+		4,
+		uintptr(unsafe.Pointer(auto)),
+		uintptr(unsafe.Pointer(eventId)),
+		uintptr(unsafe.Pointer(element)),
+		uintptr(unsafe.Pointer(handler)),
+		0,
+		0)
+	if hr != 0 {
+		return ole.NewError(hr)
+	}
+	return nil
 }
 
 func addStructureChangedEventHandler(auto *IUIAutomation, element *IUIAutomationElement, scope TreeScope, cacheRequest *IUIAutomationCacheRequest, handler *IUIAutomationStructureChangedEventHandler) error {
@@ -233,4 +293,17 @@ func removeAllEventHandlers(auto *IUIAutomation) error {
 		return ole.NewError(hr)
 	}
 	return nil
+}
+
+func elementFromHandle(auto *IUIAutomation, hwnd uintptr) (elem *IUIAutomationElement, err error) {
+	hr, _, _ := syscall.Syscall(
+		auto.VTable().ElementFromHandle,
+		3,
+		uintptr(unsafe.Pointer(auto)),
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(&elem)))
+	if hr != 0 {
+		err = ole.NewError(hr)
+	}
+	return
 }

@@ -114,4 +114,5 @@ const (
 	UIA_IsItemContainerPatternAvailablePropertyId     = 30108
 	UIA_IsVirtualizedItemPatternAvailablePropertyId   = 30109
 	UIA_IsSynchronizedInputPatternAvailablePropertyId = 30110
+	UIA_SizePropertyId								  = 30167
 )
