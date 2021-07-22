@@ -1,4 +1,5 @@
 // +build amd64
+
 package w32uiautomation
 
 import "github.com/go-ole/go-ole"

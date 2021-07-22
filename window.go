@@ -5,8 +5,8 @@ import (
 	"unsafe"
 )
 
-func Select(element *IUIAutomationElement) error {
-	unknown, err := element.GetCurrentPattern(UIA_SelectionItemPatternId)
+func CloseWindow(element *IUIAutomationElement) error {
+	unknown, err := element.GetCurrentPattern(UIA_WindowPatternId)
 	if err != nil {
 		return err
 	}
@@ -15,14 +15,14 @@ func Select(element *IUIAutomationElement) error {
 	}
 	defer unknown.Release()
 
-	disp, err := unknown.QueryInterface(IID_IUIAutomationSelectionItemPattern)
+	disp, err := unknown.QueryInterface(IID_IUIAutomationWindowPattern)
 	if err != nil {
 		return err
 	}
 
-	pattern := (*IUIAutomationSelectionItemPattern)(unsafe.Pointer(disp))
+	pattern := (*IUIAutomationWindowPattern)(unsafe.Pointer(disp))
 	defer pattern.Release()
-	err = pattern.Select()
+	err = pattern.Close()
 	if err != nil {
 		return err
 	}
